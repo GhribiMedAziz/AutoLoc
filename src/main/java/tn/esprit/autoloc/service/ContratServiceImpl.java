@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tn.esprit.autoloc.domain.Contrat;
+import tn.esprit.autoloc.mapper.ContratMapper;
 import tn.esprit.autoloc.repository.ContratRepository;
+import tn.esprit.autoloc.web.dto.ContratDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,26 +16,34 @@ import java.util.Optional;
 public class ContratServiceImpl implements IContratService {
 
     private final ContratRepository contratRepository;
+    private final ContratMapper contratMapper;
 
     @Autowired
-    public ContratServiceImpl(ContratRepository contratRepository) {
+    public ContratServiceImpl(ContratRepository contratRepository, ContratMapper contratMapper) {
         this.contratRepository = contratRepository;
+        this.contratMapper = contratMapper;
     }
 
     @Override
-    public List<Contrat> findAll() {
-        return contratRepository.findAll();
+    public List<ContratDTO> findAll() {
+        return contratRepository.findAll()
+                .stream()
+                .map(contratMapper::toDto)
+                .toList();
     }
 
     @Override
-    public Optional<Contrat> findById(Long id) {
-        return contratRepository.findById(id);
+    public Optional<ContratDTO> findById(Long id) {
+        return contratRepository.findById(id)
+                .map(contratMapper::toDto);
     }
 
     @Override
     @Transactional
-    public Contrat save(Contrat contrat) {
-        return contratRepository.save(contrat);
+    public ContratDTO save(ContratDTO contratDTO) {
+        Contrat contrat = contratMapper.toEntity(contratDTO);
+        Contrat saved = contratRepository.save(contrat);
+        return contratMapper.toDto(saved);
     }
 
     @Override
@@ -43,7 +53,8 @@ public class ContratServiceImpl implements IContratService {
     }
 
     @Override
-    public Optional<Contrat> findByReservationId(Long idReservation) {
-        return contratRepository.findByReservationIdReservation(idReservation);
+    public Optional<ContratDTO> findByReservationId(Long idReservation) {
+        return contratRepository.findByReservationIdReservation(idReservation)
+                .map(contratMapper::toDto);
     }
 }

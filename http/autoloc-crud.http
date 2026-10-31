@@ -1,0 +1,106 @@
+### AutoLoc - Cool Request / IntelliJ HTTP Client
+@baseUrl = http://localhost:8081
+
+### VEHICULES
+GET {{baseUrl}}/api/vehicules
+
+###
+GET {{baseUrl}}/api/vehicules/1
+
+###
+POST {{baseUrl}}/api/vehicules
+Content-Type: application/json
+
+{
+  "immatriculation": "230-TN-4455",
+  "marque": "Toyota",
+  "modele": "Yaris",
+  "categorie": "CITADINE",
+  "tarifJournalier": 95.00,
+  "statut": "DISPONIBLE"
+}
+
+###
+PUT {{baseUrl}}/api/vehicules/1
+Content-Type: application/json
+
+{
+  "immatriculation": "230-TN-4455",
+  "marque": "Toyota",
+  "modele": "Yaris Hybrid",
+  "categorie": "CITADINE",
+  "tarifJournalier": 110.00,
+  "statut": "DISPONIBLE"
+}
+
+###
+DELETE {{baseUrl}}/api/vehicules/1
+
+### CLIENTS
+GET {{baseUrl}}/api/clients
+
+###
+GET {{baseUrl}}/api/clients/1
+
+###
+POST {{baseUrl}}/api/clients
+Content-Type: application/json
+
+{
+  "nom": "Ben Ali",
+  "prenom": "Sami",
+  "email": "sami.benali@esprit.tn",
+  "telephone": "22111222",
+  "numPermis": "TN-PERM-001",
+  "dateInscription": "2026-10-18"
+}
+
+###
+PUT {{baseUrl}}/api/clients/1
+Content-Type: application/json
+
+{
+  "nom": "Ben Ali",
+  "prenom": "Sami",
+  "email": "sami.benali@esprit.tn",
+  "telephone": "22999888",
+  "numPermis": "TN-PERM-001",
+  "dateInscription": "2026-10-18"
+}
+
+###
+DELETE {{baseUrl}}/api/clients/1
+
+### AGENCES
+GET {{baseUrl}}/api/agences
+
+###
+GET {{baseUrl}}/api/agences/1
+
+###
+POST {{baseUrl}}/api/agences
+Content-Type: application/json
+
+{
+  "nom": "AutoLoc Tunis Centre",
+  "ville": "Tunis",
+  "adresse": "12 Avenue Habib Bourguiba",
+  "telephone": "71333444"
+}
+
+###
+PUT {{baseUrl}}/api/agences/1
+Content-Type: application/json
+
+{
+  "nom": "AutoLoc Tunis Centre",
+  "ville": "Tunis",
+  "adresse": "20 Avenue de la Liberte",
+  "telephone": "71333444"
+}
+
+###
+DELETE {{baseUrl}}/api/agences/1
+
+### SWAGGER
+GET {{baseUrl}}/swagger-ui.html

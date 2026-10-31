@@ -16,13 +16,13 @@ import java.util.List;
 @Configuration
 public class DataInitializer {
 
-    private static final Logger log = LoggerFactory.getLogger(DataInitializer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataInitializer.class);
 
     @Bean
     public CommandLineRunner initVehicules(VehiculeRepository vehiculeRepository) {
         return args -> {
             if (vehiculeRepository.count() == 0) {
-                log.info("Insertion des vehicules de demonstration...");
+                LOGGER.info("Insertion des vehicules de demonstration...");
                 Vehicule v1 = new Vehicule(
                         null,
                         "200-TN-1234",
@@ -51,7 +51,7 @@ public class DataInitializer {
                         StatutVehicule.MAINTENANCE
                 );
                 vehiculeRepository.saveAll(List.of(v1, v2, v3));
-                log.info("3 vehicules de demonstration inseres avec succes.");
+                LOGGER.info("3 vehicules de demonstration inseres avec succes.");
             }
         };
     }

@@ -1,16 +1,21 @@
 package tn.esprit.autoloc.web.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.autoloc.domain.Paiement;
 import tn.esprit.autoloc.service.IPaiementService;
+import tn.esprit.autoloc.web.dto.PaiementDTO;
+import tn.esprit.autoloc.web.exception.ResourceNotFoundException;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/paiements")
+@Tag(name = "Paiements", description = "CRUD des paiements avec DTOs et validation")
 public class PaiementController {
 
     private final IPaiementService paiementService;
@@ -21,44 +26,49 @@ public class PaiementController {
     }
 
     @GetMapping
-    public List<Paiement> getAllPaiements() {
+    @Operation(summary = "Lister les paiements")
+    public List<PaiementDTO> getAllPaiements() {
         return paiementService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Paiement> getPaiementById(@PathVariable Long id) {
+    @Operation(summary = "Consulter un paiement par ID")
+    public ResponseEntity<PaiementDTO> getPaiementById(@PathVariable Long id) {
         return paiementService.findById(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException("Paiement introuvable avec l'identifiant : " + id));
     }
 
     @GetMapping("/by-contrat/{idContrat}")
-    public ResponseEntity<List<Paiement>> getPaiementsByContratId(@PathVariable Long idContrat) {
-        return ResponseEntity.ok(paiementService.findByContratId(idContrat));
+    @Operation(summary = "Lister les paiements d'un contrat")
+    public List<PaiementDTO> getPaiementsByContratId(@PathVariable Long idContrat) {
+        return paiementService.findByContratId(idContrat);
     }
 
     @PostMapping
-    public ResponseEntity<Paiement> createPaiement(@RequestBody Paiement paiement) {
-        Paiement savedPaiement = paiementService.save(paiement);
-        return new ResponseEntity<>(savedPaiement, HttpStatus.CREATED);
+    @Operation(summary = "Enregistrer un paiement avec validation")
+    public ResponseEntity<PaiementDTO> createPaiement(@Valid @RequestBody PaiementDTO paiementDTO) {
+        PaiementDTO saved = paiementService.save(paiementDTO);
+        return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Paiement> updatePaiement(@PathVariable Long id, @RequestBody Paiement paiement) {
-        return paiementService.findById(id)
-                .map(existing -> {
-                    paiement.setIdPaiement(id);
-                    return ResponseEntity.ok(paiementService.save(paiement));
-                })
-                .orElse(ResponseEntity.notFound().build());
+    @Operation(summary = "Modifier un paiement")
+    public ResponseEntity<PaiementDTO> updatePaiement(@PathVariable Long id, @Valid @RequestBody PaiementDTO paiementDTO) {
+        if (paiementService.findById(id).isEmpty()) {
+            throw new ResourceNotFoundException("Paiement introuvable pour mise a jour : " + id);
+        }
+        paiementDTO.setIdPaiement(id);
+        return ResponseEntity.ok(paiementService.save(paiementDTO));
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Supprimer un paiement")
     public ResponseEntity<Void> deletePaiement(@PathVariable Long id) {
-        if (paiementService.findById(id).isPresent()) {
-            paiementService.deleteById(id);
-            return ResponseEntity.noContent().build();
+        if (paiementService.findById(id).isEmpty()) {
+            throw new ResourceNotFoundException("Paiement introuvable pour suppression : " + id);
         }
-        return ResponseEntity.notFound().build();
+        paiementService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

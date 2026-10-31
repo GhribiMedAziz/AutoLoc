@@ -1,0 +1,366 @@
+{
+  "info": {
+    "name": "AutoLoc API - Collection Postman (Atelier DTO & Validation)",
+    "description": "Collection complète des endpoints CRUD pour Agence, Client et Vehicule avec DTOs, validation des données (Bean Validation), gestion globale des erreurs et Swagger OpenAPI v3",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8081",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Agences (DTO)",
+      "item": [
+        {
+          "name": "GET - Lister toutes les agences (DTO)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/agences",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "agences"]
+            }
+          }
+        },
+        {
+          "name": "GET - Consulter une agence par ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/agences/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "agences", "1"]
+            }
+          }
+        },
+        {
+          "name": "POST - Creer une agence (Valide)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"AutoLoc Tunis Centre\",\n  \"ville\": \"Tunis\",\n  \"adresse\": \"20 Avenue de la Liberte\",\n  \"telephone\": \"71333444\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/agences",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "agences"]
+            }
+          }
+        },
+        {
+          "name": "POST - Creer une agence (Invalide - Test 400 Bean Validation)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"A\",\n  \"ville\": \"\",\n  \"adresse\": \"\",\n  \"telephone\": \"123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/agences",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "agences"]
+            }
+          }
+        },
+        {
+          "name": "PUT - Modifier une agence (DTO)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"AutoLoc Tunis Centre Maj\",\n  \"ville\": \"Tunis\",\n  \"adresse\": \"20 Avenue de la Liberte\",\n  \"telephone\": \"71999888\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/agences/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "agences", "1"]
+            }
+          }
+        },
+        {
+          "name": "DELETE - Supprimer une agence",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/agences/2",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "agences", "2"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Clients (DTO)",
+      "item": [
+        {
+          "name": "GET - Lister tous les clients (DTO)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/clients",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "clients"]
+            }
+          }
+        },
+        {
+          "name": "GET - Consulter un client par ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/clients/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "clients", "1"]
+            }
+          }
+        },
+        {
+          "name": "GET - Rechercher un client par Email",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/clients/by-email?email=sami.benali@esprit.tn",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "clients", "by-email"],
+              "query": [
+                {
+                  "key": "email",
+                  "value": "sami.benali@esprit.tn"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST - Creer un client (Valide)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Trabelsi\",\n  \"prenom\": \"Yasmine\",\n  \"email\": \"yasmine.trabelsi@esprit.tn\",\n  \"telephone\": \"23456789\",\n  \"numPermis\": \"TN-PERM-002\",\n  \"dateInscription\": \"2026-10-31\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/clients",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "clients"]
+            }
+          }
+        },
+        {
+          "name": "POST - Creer un client (Invalide - Test 400 Bean Validation)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"\",\n  \"prenom\": \"Y\",\n  \"email\": \"adresse-invalide\",\n  \"telephone\": \"00\",\n  \"numPermis\": \"1\",\n  \"dateInscription\": \"2099-01-01\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/clients",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "clients"]
+            }
+          }
+        },
+        {
+          "name": "DELETE - Supprimer un client",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/clients/2",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "clients", "2"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Vehicules (DTO)",
+      "item": [
+        {
+          "name": "GET - Lister tous les vehicules (DTO)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/vehicules",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vehicules"]
+            }
+          }
+        },
+        {
+          "name": "GET - Consulter un vehicule par ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/vehicules/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vehicules", "1"]
+            }
+          }
+        },
+        {
+          "name": "GET - Consulter un vehicule inexistant (Test 404 ResourceNotFound)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/vehicules/99999",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vehicules", "99999"]
+            }
+          }
+        },
+        {
+          "name": "POST - Creer un vehicule (Valide)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"immatriculation\": \"240-TN-8888\",\n  \"marque\": \"Mercedes-Benz\",\n  \"modele\": \"Classe A\",\n  \"categorie\": \"BERLINE\",\n  \"tarifJournalier\": 260.00,\n  \"statut\": \"DISPONIBLE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/vehicules",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vehicules"]
+            }
+          }
+        },
+        {
+          "name": "POST - Creer un vehicule (Invalide - Test 400 Bean Validation)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"immatriculation\": \"INVALID\",\n  \"marque\": \"\",\n  \"modele\": \"\",\n  \"categorie\": \"BERLINE\",\n  \"tarifJournalier\": -50.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/vehicules",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vehicules"]
+            }
+          }
+        },
+        {
+          "name": "PUT - Modifier un vehicule (DTO)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"immatriculation\": \"240-TN-8888\",\n  \"marque\": \"Mercedes-Benz\",\n  \"modele\": \"Classe A 200\",\n  \"categorie\": \"BERLINE\",\n  \"tarifJournalier\": 275.00,\n  \"statut\": \"LOUE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/vehicules/6",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vehicules", "6"]
+            }
+          }
+        },
+        {
+          "name": "DELETE - Supprimer un vehicule",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/vehicules/6",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vehicules", "6"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Swagger Docs",
+      "item": [
+        {
+          "name": "GET - OpenAPI v3 JSON Schema",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v3/api-docs",
+              "host": ["{{baseUrl}}"],
+              "path": ["v3", "api-docs"]
+            }
+          }
+        },
+        {
+          "name": "GET - Swagger UI Interface",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/swagger-ui.html",
+              "host": ["{{baseUrl}}"],
+              "path": ["swagger-ui.html"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

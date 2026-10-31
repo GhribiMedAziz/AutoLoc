@@ -1,16 +1,21 @@
 package tn.esprit.autoloc.web.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.autoloc.domain.Maintenance;
 import tn.esprit.autoloc.service.IMaintenanceService;
+import tn.esprit.autoloc.web.dto.MaintenanceDTO;
+import tn.esprit.autoloc.web.exception.ResourceNotFoundException;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/maintenances")
+@Tag(name = "Maintenances", description = "CRUD des maintenances avec DTOs et validation")
 public class MaintenanceController {
 
     private final IMaintenanceService maintenanceService;
@@ -21,44 +26,49 @@ public class MaintenanceController {
     }
 
     @GetMapping
-    public List<Maintenance> getAllMaintenances() {
+    @Operation(summary = "Lister les maintenances")
+    public List<MaintenanceDTO> getAllMaintenances() {
         return maintenanceService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Maintenance> getMaintenanceById(@PathVariable Long id) {
+    @Operation(summary = "Consulter une maintenance par ID")
+    public ResponseEntity<MaintenanceDTO> getMaintenanceById(@PathVariable Long id) {
         return maintenanceService.findById(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException("Maintenance introuvable avec l'identifiant : " + id));
     }
 
     @GetMapping("/by-vehicule/{idVehicule}")
-    public ResponseEntity<List<Maintenance>> getMaintenancesByVehiculeId(@PathVariable Long idVehicule) {
-        return ResponseEntity.ok(maintenanceService.findByVehiculeId(idVehicule));
+    @Operation(summary = "Lister les maintenances d'un vehicule")
+    public List<MaintenanceDTO> getMaintenancesByVehiculeId(@PathVariable Long idVehicule) {
+        return maintenanceService.findByVehiculeId(idVehicule);
     }
 
     @PostMapping
-    public ResponseEntity<Maintenance> createMaintenance(@RequestBody Maintenance maintenance) {
-        Maintenance savedMaintenance = maintenanceService.save(maintenance);
-        return new ResponseEntity<>(savedMaintenance, HttpStatus.CREATED);
+    @Operation(summary = "Creer une maintenance avec validation")
+    public ResponseEntity<MaintenanceDTO> createMaintenance(@Valid @RequestBody MaintenanceDTO maintenanceDTO) {
+        MaintenanceDTO saved = maintenanceService.save(maintenanceDTO);
+        return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Maintenance> updateMaintenance(@PathVariable Long id, @RequestBody Maintenance maintenance) {
-        return maintenanceService.findById(id)
-                .map(existing -> {
-                    maintenance.setIdMaintenance(id);
-                    return ResponseEntity.ok(maintenanceService.save(maintenance));
-                })
-                .orElse(ResponseEntity.notFound().build());
+    @Operation(summary = "Modifier une maintenance")
+    public ResponseEntity<MaintenanceDTO> updateMaintenance(@PathVariable Long id, @Valid @RequestBody MaintenanceDTO maintenanceDTO) {
+        if (maintenanceService.findById(id).isEmpty()) {
+            throw new ResourceNotFoundException("Maintenance introuvable pour mise a jour : " + id);
+        }
+        maintenanceDTO.setIdMaintenance(id);
+        return ResponseEntity.ok(maintenanceService.save(maintenanceDTO));
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Supprimer une maintenance")
     public ResponseEntity<Void> deleteMaintenance(@PathVariable Long id) {
-        if (maintenanceService.findById(id).isPresent()) {
-            maintenanceService.deleteById(id);
-            return ResponseEntity.noContent().build();
+        if (maintenanceService.findById(id).isEmpty()) {
+            throw new ResourceNotFoundException("Maintenance introuvable pour suppression : " + id);
         }
-        return ResponseEntity.notFound().build();
+        maintenanceService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -3,8 +3,12 @@ package tn.esprit.autoloc.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tn.esprit.autoloc.domain.Contrat;
 import tn.esprit.autoloc.domain.Paiement;
+import tn.esprit.autoloc.mapper.PaiementMapper;
+import tn.esprit.autoloc.repository.ContratRepository;
 import tn.esprit.autoloc.repository.PaiementRepository;
+import tn.esprit.autoloc.web.dto.PaiementDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,26 +18,42 @@ import java.util.Optional;
 public class PaiementServiceImpl implements IPaiementService {
 
     private final PaiementRepository paiementRepository;
+    private final ContratRepository contratRepository;
+    private final PaiementMapper paiementMapper;
 
     @Autowired
-    public PaiementServiceImpl(PaiementRepository paiementRepository) {
+    public PaiementServiceImpl(PaiementRepository paiementRepository,
+                               ContratRepository contratRepository,
+                               PaiementMapper paiementMapper) {
         this.paiementRepository = paiementRepository;
+        this.contratRepository = contratRepository;
+        this.paiementMapper = paiementMapper;
     }
 
     @Override
-    public List<Paiement> findAll() {
-        return paiementRepository.findAll();
+    public List<PaiementDTO> findAll() {
+        return paiementRepository.findAll()
+                .stream()
+                .map(paiementMapper::toDto)
+                .toList();
     }
 
     @Override
-    public Optional<Paiement> findById(Long id) {
-        return paiementRepository.findById(id);
+    public Optional<PaiementDTO> findById(Long id) {
+        return paiementRepository.findById(id)
+                .map(paiementMapper::toDto);
     }
 
     @Override
     @Transactional
-    public Paiement save(Paiement paiement) {
-        return paiementRepository.save(paiement);
+    public PaiementDTO save(PaiementDTO paiementDTO) {
+        Paiement paiement = paiementMapper.toEntity(paiementDTO);
+        if (paiementDTO.getIdContrat() != null) {
+            Optional<Contrat> contratOpt = contratRepository.findById(paiementDTO.getIdContrat());
+            contratOpt.ifPresent(paiement::setContrat);
+        }
+        Paiement saved = paiementRepository.save(paiement);
+        return paiementMapper.toDto(saved);
     }
 
     @Override
@@ -43,7 +63,10 @@ public class PaiementServiceImpl implements IPaiementService {
     }
 
     @Override
-    public List<Paiement> findByContratId(Long idContrat) {
-        return paiementRepository.findByContratIdContrat(idContrat);
+    public List<PaiementDTO> findByContratId(Long idContrat) {
+        return paiementRepository.findByContratIdContrat(idContrat)
+                .stream()
+                .map(paiementMapper::toDto)
+                .toList();
     }
 }

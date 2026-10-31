@@ -1,22 +1,24 @@
 package tn.esprit.autoloc.service;
 
-import tn.esprit.autoloc.domain.Reservation;
 import tn.esprit.autoloc.domain.StatutReservation;
+import tn.esprit.autoloc.web.dto.ReservationDTO;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface IReservationService {
 
-    List<Reservation> findAll();
+    List<ReservationDTO> findAll();
 
-    Optional<Reservation> findById(Long id);
+    Optional<ReservationDTO> findById(Long id);
 
-    Reservation save(Reservation reservation);
+    ReservationDTO save(ReservationDTO reservationDTO);
 
     void deleteById(Long id);
 
-    List<Reservation> findByClientId(Long idClient);
+    List<ReservationDTO> findByClientId(Long idClient);
 
-    List<Reservation> findByStatut(StatutReservation statut);
+    List<ReservationDTO> findByVehiculeId(Long idVehicule);
+
+    List<ReservationDTO> findByStatut(StatutReservation statut);
 }

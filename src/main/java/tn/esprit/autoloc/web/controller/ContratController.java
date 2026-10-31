@@ -1,16 +1,21 @@
 package tn.esprit.autoloc.web.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.autoloc.domain.Contrat;
 import tn.esprit.autoloc.service.IContratService;
+import tn.esprit.autoloc.web.dto.ContratDTO;
+import tn.esprit.autoloc.web.exception.ResourceNotFoundException;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/contrats")
+@Tag(name = "Contrats", description = "CRUD des contrats avec DTOs et validation")
 public class ContratController {
 
     private final IContratService contratService;
@@ -21,46 +26,51 @@ public class ContratController {
     }
 
     @GetMapping
-    public List<Contrat> getAllContrats() {
+    @Operation(summary = "Lister les contrats", description = "Retourne tous les contrats sous forme de DTOs")
+    public List<ContratDTO> getAllContrats() {
         return contratService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Contrat> getContratById(@PathVariable Long id) {
+    @Operation(summary = "Consulter un contrat par ID")
+    public ResponseEntity<ContratDTO> getContratById(@PathVariable Long id) {
         return contratService.findById(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException("Contrat introuvable avec l'identifiant : " + id));
     }
 
     @GetMapping("/by-reservation/{idReservation}")
-    public ResponseEntity<Contrat> getContratByReservationId(@PathVariable Long idReservation) {
+    @Operation(summary = "Consulter un contrat par identifiant de reservation")
+    public ResponseEntity<ContratDTO> getContratByReservationId(@PathVariable Long idReservation) {
         return contratService.findByReservationId(idReservation)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException("Contrat introuvable pour la reservation : " + idReservation));
     }
 
     @PostMapping
-    public ResponseEntity<Contrat> createContrat(@RequestBody Contrat contrat) {
-        Contrat savedContrat = contratService.save(contrat);
-        return new ResponseEntity<>(savedContrat, HttpStatus.CREATED);
+    @Operation(summary = "Creer un contrat avec validation")
+    public ResponseEntity<ContratDTO> createContrat(@Valid @RequestBody ContratDTO contratDTO) {
+        ContratDTO saved = contratService.save(contratDTO);
+        return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Contrat> updateContrat(@PathVariable Long id, @RequestBody Contrat contrat) {
-        return contratService.findById(id)
-                .map(existing -> {
-                    contrat.setIdContrat(id);
-                    return ResponseEntity.ok(contratService.save(contrat));
-                })
-                .orElse(ResponseEntity.notFound().build());
+    @Operation(summary = "Modifier un contrat")
+    public ResponseEntity<ContratDTO> updateContrat(@PathVariable Long id, @Valid @RequestBody ContratDTO contratDTO) {
+        if (contratService.findById(id).isEmpty()) {
+            throw new ResourceNotFoundException("Contrat introuvable pour mise a jour : " + id);
+        }
+        contratDTO.setIdContrat(id);
+        return ResponseEntity.ok(contratService.save(contratDTO));
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Supprimer un contrat")
     public ResponseEntity<Void> deleteContrat(@PathVariable Long id) {
-        if (contratService.findById(id).isPresent()) {
-            contratService.deleteById(id);
-            return ResponseEntity.noContent().build();
+        if (contratService.findById(id).isEmpty()) {
+            throw new ResourceNotFoundException("Contrat introuvable pour suppression : " + id);
         }
-        return ResponseEntity.notFound().build();
+        contratService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

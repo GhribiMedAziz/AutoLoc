@@ -1,21 +1,21 @@
 package tn.esprit.autoloc.service;
 
-import tn.esprit.autoloc.domain.Client;
+import tn.esprit.autoloc.web.dto.ClientDTO;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface IClientService {
 
-    List<Client> findAll();
+    List<ClientDTO> findAll();
 
-    Optional<Client> findById(Long id);
+    Optional<ClientDTO> findById(Long id);
 
-    Client save(Client client);
+    ClientDTO save(ClientDTO clientDTO);
 
     void deleteById(Long id);
 
-    Optional<Client> findByEmail(String email);
+    Optional<ClientDTO> findByEmail(String email);
 
     boolean existsByEmail(String email);
 }
